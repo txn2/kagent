@@ -1,0 +1,97 @@
+{
+  "networks": {
+    "txn2-net": {
+      "Driver": "bridge",
+      "CheckDuplicate": true,
+      "EnableIPv6": false,
+      "IPAM": {
+        "Driver": "default",
+        "Options": {},
+        "Config": [
+          {
+            "Subnet": "172.21.0.0/16",
+            "Gateway": "172.21.0.1"
+          }
+        ]
+      },
+      "Internal": false,
+      "Attachable": false,
+      "Ingress": false,
+      "ConfigFrom": {
+        "Network": ""
+      },
+      "ConfigOnly": false,
+      "Containers": {},
+      "Options": {},
+      "Labels": {}
+    }
+  },
+  "containers": {
+    "kdash": {
+      "Config": {
+        "Image": "txn2/kdash:armhf-latest",
+        "ExposedPorts": {
+          "80/tcp": {}
+        }
+      },
+      "NetworkingConfig": {
+        "EndpointsConfig": {
+          "txn2-net": {}
+        }
+      },
+      "Hostconfig": {
+        "PortBindings": {
+          "80/tcp": [{ "HostPort": "2701" }]
+        },
+        "RestartPolicy": {"Name": "always"},
+        "LogConfig": {
+          "Type": "json-file",
+          "Config": {
+            "max-buffer-size": "1m",
+            "max-size": "5m",
+            "mode": "non-blocking"
+          }
+        }
+      }
+    },
+    "txwt": {
+      "Config": {
+        "Image": "txn2/txwt:armhf-v1.0.1",
+        "Tty": false,
+        "AttachStdin": false,
+        "AttachStdout": false,
+        "AttachStderr": false,
+        "OpenStdin": false,
+        "StdinOnce": false,
+        "Cmd": [
+          "--debug",
+          "--interval",
+          "30",
+          "--cleanup"
+        ]
+      },
+      "NetworkingConfig": {
+        "EndpointsConfig": {
+          "txn2-net": {}
+        }
+      },
+      "Hostconfig": {
+        "Binds": [
+          "/var/run/docker.sock:/var/run/docker.sock"
+        ],
+        "Privileged": true,
+        "RestartPolicy": {
+          "Name": "always"
+        },
+        "LogConfig": {
+          "Type": "json-file",
+          "Config": {
+            "max-buffer-size": "1m",
+            "max-size": "5m",
+            "mode": "non-blocking"
+          }
+        }
+      }
+    }
+  }
+}
